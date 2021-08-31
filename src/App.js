@@ -1,25 +1,55 @@
-import logo from './logo.svg';
+import React from 'react';
+import { connect } from 'react-redux';
+
+import MovieInfo from './MovieInfo';
+
+import { fetchMovie as fetchMovieAction } from './redux/actions/movieActions';
+
 import './App.css';
 
-function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+class App extends React.Component {
+  constructor(props) {
+    super(props);
+
+    this.state = {
+      query: '',
+    };
+  }
+
+  handleChange = ({ target }) => {
+    this.setState({
+      query: target.value,
+    });
+  };
+
+  handleSubmit = (event) => {
+    event.preventDefault();
+
+    const { fetchMovie } = this.props;
+    const { query } = this.state;
+
+    fetchMovie(query);
+  };
+
+  render() {
+    const { query } = this.state;
+
+    return (
+      <div className="App">
+        <form onSubmit={this.handleSubmit}>
+          <input type="text" onChange={this.handleChange} value={query} />
+          <button type="submit" onClick={this.handleSubmit}>
+            search
+          </button>
+        </form>
+        <MovieInfo />
+      </div>
+    );
+  }
 }
 
-export default App;
+const mapDispatchToProps = (dispatch) => ({
+  fetchMovie: (query) => dispatch(fetchMovieAction(query)),
+});
+
+export default connect(null, mapDispatchToProps)(App);
